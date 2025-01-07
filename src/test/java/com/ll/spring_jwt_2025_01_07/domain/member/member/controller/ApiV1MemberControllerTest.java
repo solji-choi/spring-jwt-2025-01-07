@@ -266,12 +266,13 @@ public class ApiV1MemberControllerTest {
     @Test
     @DisplayName("내 정보, width user1")
     void t9() throws Exception {
-        Member member = memberService.findByUsername("user1").get();
+        Member actor = memberService.findByUsername("user2").get();
+        String actorAccessToken = memberService.getAccessToken(actor);
 
         ResultActions resultActions = mvc
                 .perform(
                         get("/api/v1/members/me")
-                                .header("Authorization", "Bearer " + member.getApiKey())
+                                .header("Authorization", "Bearer " + actorAccessToken)
                 )
                 .andDo(print());
 
@@ -279,21 +280,22 @@ public class ApiV1MemberControllerTest {
                 .andExpect(handler().handlerType(ApiV1MemberController.class))
                 .andExpect(handler().methodName("me"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(member.getId()))
-                .andExpect(jsonPath("$.createDate").value(Matchers.startsWith(member.getCreateDate().toString().substring(0, 25))))
-                .andExpect(jsonPath("$.modifyDate").value(Matchers.startsWith(member.getModifyDate().toString().substring(0, 25))))
-                .andExpect(jsonPath("$.nickname").value(member.getNickname()));
+                .andExpect(jsonPath("$.id").value(actor.getId()))
+                .andExpect(jsonPath("$.createDate").value(Matchers.startsWith(actor.getCreateDate().toString().substring(0, 25))))
+                .andExpect(jsonPath("$.modifyDate").value(Matchers.startsWith(actor.getModifyDate().toString().substring(0, 25))))
+                .andExpect(jsonPath("$.nickname").value(actor.getNickname()));
     }
 
     @Test
     @DisplayName("내 정보, width user2")
     void t10() throws Exception {
-        Member member = memberService.findByUsername("user2").get();
+        Member actor = memberService.findByUsername("user2").get();
+        String actorAccessToken = memberService.getAccessToken(actor);
 
         ResultActions resultActions = mvc
                 .perform(
                         get("/api/v1/members/me")
-                                .header("Authorization", "Bearer " + member.getApiKey())
+                                .header("Authorization", "Bearer " + actorAccessToken)
                                 .contentType(
                                         new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8)
                                 )
@@ -304,19 +306,19 @@ public class ApiV1MemberControllerTest {
                 .andExpect(handler().handlerType(ApiV1MemberController.class))
                 .andExpect(handler().methodName("me"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(member.getId()))
-                .andExpect(jsonPath("$.createDate").value(member.getCreateDate().toString()))
-                .andExpect(jsonPath("$.modifyDate").value(member.getModifyDate().toString()))
-                .andExpect(jsonPath("$.nickname").value(member.getNickname()));
+                .andExpect(jsonPath("$.id").value(actor.getId()))
+                .andExpect(jsonPath("$.createDate").value(actor.getCreateDate().toString()))
+                .andExpect(jsonPath("$.modifyDate").value(actor.getModifyDate().toString()))
+                .andExpect(jsonPath("$.nickname").value(actor.getNickname()));
     }
 
     @Test
-    @DisplayName("내 정보, width wrong api key")
+    @DisplayName("내 정보, width wrong access key")
     void t11() throws Exception {
         ResultActions resultActions = mvc
                 .perform(
                         get("/api/v1/members/me")
-                                .header("Authorization", "Bearer wrong-api-key" )
+                                .header("Authorization", "Bearer wrong-access-key" )
                                 .contentType(
                                         new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8)
                                 )

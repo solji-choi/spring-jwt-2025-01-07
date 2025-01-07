@@ -71,11 +71,12 @@ public class ApiV1PostCommentControllerTest {
     @Test
     @DisplayName("댓글 삭제")
     void t2() throws Exception {
-        Member author = memberService.findByUsername("user2").get();
+        Member actor = memberService.findByUsername("user2").get();
+        String actorAccessToken = memberService.getAccessToken(actor);
 
         ResultActions resultActions = mvc
                 .perform(delete("/api/v1/posts/1/comments/1")
-                        .header("Authorization", "Bearer " + author.getApiKey())
+                        .header("Authorization", "Bearer " + actorAccessToken)
                         .contentType(
                                 new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8)
                         )
@@ -93,11 +94,12 @@ public class ApiV1PostCommentControllerTest {
     @Test
     @DisplayName("댓글 수정")
     void t3() throws Exception {
-        Member author = memberService.findByUsername("user2").get();
+        Member actor = memberService.findByUsername("user2").get();
+        String actorAccessToken = memberService.getAccessToken(actor);
 
         ResultActions resultActions = mvc
                 .perform(put("/api/v1/posts/1/comments/1")
-                        .header("Authorization", "Bearer " + author.getApiKey())
+                        .header("Authorization", "Bearer " + actorAccessToken)
                         .content("""
                                 {
                                     "content": "내용 new"
@@ -118,19 +120,20 @@ public class ApiV1PostCommentControllerTest {
                 .andExpect(jsonPath("$.data.id").value(1))
                 .andExpect(jsonPath("$.data.createDate").exists())
                 .andExpect(jsonPath("$.data.modifyDate").exists())
-                .andExpect(jsonPath("$.data.authorId").value(author.getId()))
-                .andExpect(jsonPath("$.data.authorName").value(author.getName()))
+                .andExpect(jsonPath("$.data.authorId").value(actor.getId()))
+                .andExpect(jsonPath("$.data.authorName").value(actor.getName()))
                 .andExpect(jsonPath("$.data.content").value("내용 new"));
     }
 
     @Test
     @DisplayName("댓글 등록")
     void t4() throws Exception {
-        Member author = memberService.findByUsername("user2").get();
+        Member actor = memberService.findByUsername("user2").get();
+        String actorAccessToken = memberService.getAccessToken(actor);
 
         ResultActions resultActions = mvc
                 .perform(post("/api/v1/posts/1/comments")
-                        .header("Authorization", "Bearer " + author.getApiKey())
+                        .header("Authorization", "Bearer " + actorAccessToken)
                         .content("""
                                 {
                                     "content": "내용 new"

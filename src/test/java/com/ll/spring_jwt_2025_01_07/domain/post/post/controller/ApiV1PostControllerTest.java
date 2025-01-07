@@ -86,11 +86,12 @@ public class ApiV1PostControllerTest {
     @Test
     @DisplayName("글 작성")
     void t3() throws Exception {
-        Member author = memberService.findByUsername("user1").get();
+        Member actor = memberService.findByUsername("user2").get();
+        String actorAccessToken = memberService.getAccessToken(actor);
 
         ResultActions resultActions = mvc
                 .perform(post("/api/v1/posts")
-                        .header("Authorization", "Bearer " + author.getApiKey())
+                        .header("Authorization", "Bearer " + actorAccessToken)
                         .content("""
                                 {
                                     "title": "테스트 제목",
@@ -107,7 +108,7 @@ public class ApiV1PostControllerTest {
 
         Post post = postService.findLatest().get();
 
-        assertThat(post.getAuthor()).isEqualTo(author);
+        assertThat(post.getAuthor()).isEqualTo(actor);
 
         resultActions
                 .andExpect(handler().handlerType(ApiV1PostController.class))
@@ -129,11 +130,12 @@ public class ApiV1PostControllerTest {
     @Test
     @DisplayName("글 작성, with no input")
     void t4() throws Exception {
-        Member author = memberService.findByUsername("user1").get();
+        Member actor = memberService.findByUsername("user1").get();
+        String actorAccessToken = memberService.getAccessToken(actor);
 
         ResultActions resultActions = mvc
                 .perform(post("/api/v1/posts")
-                        .header("Authorization", "Bearer " + author.getApiKey())
+                        .header("Authorization", "Bearer " + actorAccessToken)
                         .content("""
                                 {
                                     "title": "",
@@ -158,7 +160,7 @@ public class ApiV1PostControllerTest {
     }
 
     @Test
-    @DisplayName("글 작성, with no author")
+    @DisplayName("글 작성, with no actor")
     void t5() throws Exception {
         ResultActions resultActions = mvc
                 .perform(post("/api/v1/posts")
@@ -183,11 +185,12 @@ public class ApiV1PostControllerTest {
     @Test
     @DisplayName("비공개글 6번글 조회, with 작성자")
     void t6() throws Exception {
-        Member author = memberService.findByUsername("user4").get();
+        Member actor = memberService.findByUsername("user4").get();
+        String actorAccessToken = memberService.getAccessToken(actor);
 
         ResultActions resultActions = mvc
                 .perform(get("/api/v1/posts/6")
-                        .header("Authorization", "Bearer " + author.getApiKey())
+                        .header("Authorization", "Bearer " + actorAccessToken)
                         .contentType(
                                 new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8)
                         )
@@ -210,7 +213,7 @@ public class ApiV1PostControllerTest {
     }
 
     @Test
-    @DisplayName("비공개글 6번글 조회, with no author")
+    @DisplayName("비공개글 6번글 조회, with no actor")
     void t7() throws Exception {
         ResultActions resultActions = mvc
                 .perform(get("/api/v1/posts/6")
@@ -234,10 +237,11 @@ public class ApiV1PostControllerTest {
     @DisplayName("비공개글 6번글 조회, with no permission")
     void t8() throws Exception {
         Member actor = memberService.findByUsername("user1").get();
+        String actorAccessToken = memberService.getAccessToken(actor);
 
         ResultActions resultActions = mvc
                 .perform(get("/api/v1/posts/6")
-                        .header("Authorization", "Bearer " + actor.getApiKey())
+                        .header("Authorization", "Bearer " + actorAccessToken)
                         .contentType(
                                 new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8)
                         )
@@ -257,14 +261,15 @@ public class ApiV1PostControllerTest {
     @Test
     @DisplayName("글 수정")
     void t9() throws Exception {
-        Member author = memberService.findByUsername("user1").get();
+        Member actor = memberService.findByUsername("user1").get();
+        String actorAccessToken = memberService.getAccessToken(actor);
         Post post = postService.findById(1).get();
 
         LocalDateTime oldModifyDate = post.getModifyDate();
 
                 ResultActions resultActions = mvc
                 .perform(put("/api/v1/posts/1")
-                        .header("Authorization", "Bearer " + author.getApiKey())
+                        .header("Authorization", "Bearer " + actorAccessToken)
                         .content("""
                                 {
                                     "title": "축구하실분 계신가요?",
@@ -299,14 +304,15 @@ public class ApiV1PostControllerTest {
     @Test
     @DisplayName("글 수정, with no input")
     void t10() throws Exception {
-        Member author = memberService.findByUsername("user1").get();
+        Member actor = memberService.findByUsername("user4").get();
+        String actorAccessToken = memberService.getAccessToken(actor);
         Post post = postService.findById(1).get();
 
         LocalDateTime oldModifyDate = post.getModifyDate();
 
         ResultActions resultActions = mvc
                 .perform(put("/api/v1/posts/1")
-                        .header("Authorization", "Bearer " + author.getApiKey())
+                        .header("Authorization", "Bearer " + actorAccessToken)
                         .content("""
                                 {
                                     "title": "",
@@ -335,7 +341,6 @@ public class ApiV1PostControllerTest {
     @Test
     @DisplayName("글 수정, with no actor")
     void t11() throws Exception {
-        Member author = memberService.findByUsername("user1").get();
         Post post = postService.findById(1).get();
 
         LocalDateTime oldModifyDate = post.getModifyDate();
@@ -363,14 +368,15 @@ public class ApiV1PostControllerTest {
     @Test
     @DisplayName("글 수정, with wrong actor")
     void t12() throws Exception {
-        Member author = memberService.findByUsername("user2").get();
+        Member actor = memberService.findByUsername("user2").get();
+        String actorAccessToken = memberService.getAccessToken(actor);
         Post post = postService.findById(1).get();
 
         LocalDateTime oldModifyDate = post.getModifyDate();
 
         ResultActions resultActions = mvc
                 .perform(put("/api/v1/posts/1")
-                        .header("Authorization", "Bearer " + author.getApiKey())
+                        .header("Authorization", "Bearer " + actorAccessToken)
                         .content("""
                                 {
                                     "title": "축구하실분 계신가요?",
@@ -394,12 +400,13 @@ public class ApiV1PostControllerTest {
     @Test
     @DisplayName("글 삭제")
     void t13() throws Exception {
-        Member author = memberService.findByUsername("user1").get();
+        Member actor = memberService.findByUsername("user1").get();
+        String actorAccessToken = memberService.getAccessToken(actor);
         Post post = postService.findById(1).get();
 
         ResultActions resultActions = mvc
                 .perform(delete("/api/v1/posts/1")
-                        .header("Authorization", "Bearer " + author.getApiKey())
+                        .header("Authorization", "Bearer " + actorAccessToken)
                         .contentType(
                                 new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8)
                         )
@@ -419,12 +426,13 @@ public class ApiV1PostControllerTest {
     @Test
     @DisplayName("글 삭제, with not exist post id")
     void t14() throws Exception {
-        Member author = memberService.findByUsername("user1").get();
+        Member actor = memberService.findByUsername("user1").get();
+        String actorAccessToken = memberService.getAccessToken(actor);
         Post post = postService.findById(1).get();
 
         ResultActions resultActions = mvc
                 .perform(delete("/api/v1/posts/1111111")
-                        .header("Authorization", "Bearer " + author.getApiKey())
+                        .header("Authorization", "Bearer " + actorAccessToken)
                         .contentType(
                                 new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8)
                         )
@@ -440,7 +448,7 @@ public class ApiV1PostControllerTest {
     }
 
     @Test
-    @DisplayName("글 삭제, with no author")
+    @DisplayName("글 삭제, with no actor")
     void t15() throws Exception {
         Post post = postService.findById(1).get();
 
@@ -461,12 +469,13 @@ public class ApiV1PostControllerTest {
     @Test
     @DisplayName("글 삭제, with no permission")
     void t16() throws Exception {
-        Member author = memberService.findByUsername("user2").get();
+        Member actor = memberService.findByUsername("user2").get();
+        String actorAccessToken = memberService.getAccessToken(actor);
         Post post = postService.findById(1).get();
 
         ResultActions resultActions = mvc
                 .perform(delete("/api/v1/posts/1")
-                        .header("Authorization", "Bearer " + author.getApiKey())
+                        .header("Authorization", "Bearer " + actorAccessToken)
                         .contentType(
                                 new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8)
                         )
@@ -607,11 +616,12 @@ public class ApiV1PostControllerTest {
     @Test
     @DisplayName("내 글 다건 조회")
     void t20() throws Exception {
-        Member author = memberService.findByUsername("user4").get();
+        Member actor = memberService.findByUsername("user4").get();
+        String actorAccessToken = memberService.getAccessToken(actor);
 
         ResultActions resultActions = mvc
                 .perform(get("/api/v1/posts/mine?page=1&pageSize=10")
-                        .header("Authorization", "Bearer " + author.getApiKey())
+                        .header("Authorization", "Bearer " + actorAccessToken)
                         .contentType(
                                 new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8)
                         )
@@ -619,7 +629,7 @@ public class ApiV1PostControllerTest {
                 .andDo(print());
 
         Page<Post> postPage = postService
-                .findByAuthorPaged(author, 1, 10);
+                .findByAuthorPaged(actor, 1, 10);
 
         resultActions
                 .andExpect(handler().handlerType(ApiV1PostController.class))
@@ -651,11 +661,12 @@ public class ApiV1PostControllerTest {
     @Test
     @DisplayName("내 글 다건 조회 with searchKeyword=발야구")
     void t21() throws Exception {
-        Member author = memberService.findByUsername("user4").get();
+        Member actor = memberService.findByUsername("user4").get();
+        String actorAccessToken = memberService.getAccessToken(actor);
 
         ResultActions resultActions = mvc
                 .perform(get("/api/v1/posts/mine?page=1&pageSize=10&searchKeyword=발야구")
-                        .header("Authorization", "Bearer " + author.getApiKey())
+                        .header("Authorization", "Bearer " + actorAccessToken)
                         .contentType(
                                 new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8)
                         )
@@ -663,7 +674,7 @@ public class ApiV1PostControllerTest {
                 .andDo(print());
 
         Page<Post> postPage = postService
-                .findByAuthorPaged(author, "title", "발야구", 1, 10);
+                .findByAuthorPaged(actor, "title", "발야구", 1, 10);
 
         resultActions
                 .andExpect(handler().handlerType(ApiV1PostController.class))
@@ -695,11 +706,12 @@ public class ApiV1PostControllerTest {
     @Test
     @DisplayName("내 글 다건 조회 with searchKeywordType=content&searchKeyword=18명")
     void t22() throws Exception {
-        Member author = memberService.findByUsername("user4").get();
+        Member actor = memberService.findByUsername("user4").get();
+        String actorAccessToken = memberService.getAccessToken(actor);
 
         ResultActions resultActions = mvc
                 .perform(get("/api/v1/posts/mine?page=1&pageSize=10&searchKeywordType=content&searchKeyword=18명")
-                        .header("Authorization", "Bearer " + author.getApiKey())
+                        .header("Authorization", "Bearer " + actorAccessToken)
                         .contentType(
                                 new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8)
                         )
@@ -707,7 +719,7 @@ public class ApiV1PostControllerTest {
                 .andDo(print());
 
         Page<Post> postPage = postService
-                .findByAuthorPaged(author, "content", "18명", 1, 10);
+                .findByAuthorPaged(actor, "content", "18명", 1, 10);
 
         resultActions
                 .andExpect(handler().handlerType(ApiV1PostController.class))
