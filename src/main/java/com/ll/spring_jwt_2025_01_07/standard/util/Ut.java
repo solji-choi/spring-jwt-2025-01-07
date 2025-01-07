@@ -41,5 +41,21 @@ public class Ut {
 
             return jwt;
         }
+
+        public static boolean isValid(String secret, String jwtStr) {
+            SecretKey secretKey = Keys.hmacShaKeyFor(secret.getBytes());
+
+            try {
+                Jwts
+                        .parser()
+                        .verifyWith(secretKey)
+                        .build()
+                        .parse(jwtStr);
+            } catch (Exception e) {
+                return false;
+            }
+
+            return true;
+        }
     }
 }
