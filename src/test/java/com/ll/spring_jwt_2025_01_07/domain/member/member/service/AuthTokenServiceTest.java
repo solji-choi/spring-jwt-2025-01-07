@@ -108,6 +108,8 @@ public class AuthTokenServiceTest {
                                 "username", memberUser1.getUsername()
                         )
                 );
+
+        System.out.println("memberUserToKen : " + accessToken);
     }
 
     @Test
