@@ -105,8 +105,8 @@ public class ApiV1PostController {
     public RsData<PostWithContentDto> write(
             @RequestBody @Valid PostWriteReqBody reqBody
     ) {
-
-        Post post = postService.write(rq.getActor(), reqBody.title, reqBody.content, reqBody.published, reqBody.listed);
+        Member author = rq.findByActor().get();
+        Post post = postService.write(author, reqBody.title, reqBody.content, reqBody.published, reqBody.listed);
 
         return new RsData<>(
                 "201-1",

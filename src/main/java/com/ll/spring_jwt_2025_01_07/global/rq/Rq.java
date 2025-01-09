@@ -89,4 +89,12 @@ public class Rq {
     public String getHeader(String name) {
         return req.getHeader(name);
     }
+
+    public Optional<Member> findByActor() {
+        Member actor = getActor();
+
+        if(actor == null) return Optional.empty();
+
+        return memberService.findById(actor.getId());
+    }
 }
