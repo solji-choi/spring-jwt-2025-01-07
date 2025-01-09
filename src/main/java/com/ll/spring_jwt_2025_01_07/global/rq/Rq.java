@@ -85,4 +85,8 @@ public class Rq {
     public void setHeader(String name, String value) {
         resp.setHeader(name, value);
     }
+
+    public String getHeader(String name) {
+        return req.getHeader(name);
+    }
 }
