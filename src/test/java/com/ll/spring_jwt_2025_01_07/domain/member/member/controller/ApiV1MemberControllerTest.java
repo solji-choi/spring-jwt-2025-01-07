@@ -359,7 +359,7 @@ public class ApiV1MemberControllerTest {
 
         resultActions
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.resultCode").value("201-1"))
+                .andExpect(jsonPath("$.resultCode").value("200-1"))
                 .andExpect(jsonPath("$.msg").value("로그아웃 되었습니다"))
                 .andExpect(result -> {
                     Cookie accessTokenCookie = result.getResponse().getCookie("accessToken");
