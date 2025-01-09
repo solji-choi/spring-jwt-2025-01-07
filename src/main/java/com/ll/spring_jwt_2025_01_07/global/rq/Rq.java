@@ -81,4 +81,8 @@ public class Rq {
                 .findFirst()
                 .orElse(null);
     }
+
+    public void setHeader(String name, String value) {
+        resp.setHeader(name, value);
+    }
 }
