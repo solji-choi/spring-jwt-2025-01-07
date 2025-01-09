@@ -27,7 +27,7 @@ public class SecurityConfig {
                                 .requestMatchers("/api/*/members/login", "/api/*/members/join")
                                 .permitAll()
                                 .requestMatchers("/api/*/posts/statistics")
-                                .hasAnyAuthority("ADMIN_ACTING")
+                                .hasRole("ADMIN")
                                 .anyRequest()
                                 .authenticated()
                 )
